@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaderboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .gold-outline { text-shadow: 0 0 5px #FFD700, 0 0 10px #FFD700; }
+        .silver-outline { text-shadow: 0 0 5px #C0C0C0, 0 0 10px #C0C0C0; }
+        .bronze-outline { text-shadow: 0 0 5px #CD7F32, 0 0 10px #CD7F32; }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen font-sans bg-gray-100 text-gray-800">
+    <div id="header-placeholder"></div>
+
+    <main class="flex-grow container mx-auto px-4 py-12">
+        <h1 class="text-4xl md:text-5xl font-extrabold text-center text-gray-900 mb-10">Leaderboard</h1>
+
+        <!-- Top 3 -->
+        <div id="top-3-container" class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12 text-center">
+            <!-- Silver (2nd Place) -->
+            <div id="rank-2" class="bg-white bg-opacity-70 backdrop-blur-sm p-8 rounded-xl shadow-lg border-2 border-gray-300 order-2 md:order-1 flex flex-col justify-center items-center h-full">
+                <!-- Placeholder -->
+            </div>
+            <!-- Gold (1st Place) -->
+            <div id="rank-1" class="bg-white bg-opacity-70 backdrop-blur-sm p-8 rounded-xl shadow-2xl border-4 border-yellow-400 order-1 md:order-2 transform md:scale-110 flex flex-col justify-center items-center h-full">
+                 <!-- Placeholder -->
+            </div>
+            <!-- Bronze (3rd Place) -->
+            <div id="rank-3" class="bg-white bg-opacity-70 backdrop-blur-sm p-8 rounded-xl shadow-lg border-2 border-orange-400 order-3 md:order-3 flex flex-col justify-center items-center h-full">
+                 <!-- Placeholder -->
+            </div>
+        </div>
+
+        <!-- Rest of the Leaderboard -->
+        <div class="max-w-4xl mx-auto bg-white bg-opacity-70 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-gray-200">
+            <h2 class="text-2xl font-bold text-center mb-6">All Participants</h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rank</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Points</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboard-body" class="bg-white divide-y divide-gray-200">
+                        <!-- Rows will be injected by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+    <div id="footer-placeholder"></div>
+
+    <script src="/js/main.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        fetch('/api/leaderboard')
+            .then(response => response.json())
+            .then(data => {
+                const top3 = data.slice(0, 3);
+                const rest = data.slice(3);
+
+                const rankContainers = {
+                    1: { id: 'rank-1', outline: 'gold-outline', rankText: '1st Place' },
+                    2: { id: 'rank-2', outline: 'silver-outline', rankText: '2nd Place' },
+                    3: { id: 'rank-3', outline: 'bronze-outline', rankText: '3rd Place' }
+                };
+
+                top3.forEach((player, index) => {
+                    const rank = index + 1;
+                    const container = document.getElementById(rankContainers[rank].id);
+                    container.innerHTML = `
+                        <h2 class="text-4xl font-bold mb-2 ${rankContainers[rank].outline}">${player.name}</h2>
+                        <p class="text-2xl font-semibold text-gray-700">${rankContainers[rank].rankText}</p>
+                        <p class="text-xl text-gray-500 mt-2">${player.points} Points</p>
+                    `;
+                });
+                
+                const leaderboardBody = document.getElementById('leaderboard-body');
+                rest.forEach((player, index) => {
+                    const rank = index + 4;
+                    const row = `
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">${rank}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-700">${player.name}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">${player.points}</td>
+                        </tr>
+                    `;
+                    leaderboardBody.innerHTML += row;
+                });
+            })
+            .catch(error => console.error('Error fetching leaderboard:', error));
+    });
+    </script>
+</body>
+</html>

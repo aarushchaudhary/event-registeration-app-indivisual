@@ -1,0 +1,10 @@
+/* This file contains global styles and sets the background image for all pages.
+  Replace 'background.jpg' with your actual background image file name.
+*/
+body {
+  background-image: url('/media/background.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  font-family: 'Inter', sans-serif;
+}

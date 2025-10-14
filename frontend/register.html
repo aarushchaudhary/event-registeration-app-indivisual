@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registration Form</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="flex flex-col min-h-screen font-sans bg-gray-100 text-gray-800">
+  
+  <div id="header-placeholder"></div>
+
+  <main class="flex-grow container mx-auto px-4 py-8">
+    <div class="max-w-3xl mx-auto bg-white bg-opacity-80 backdrop-blur-sm p-8 rounded-xl shadow-lg border border-gray-200">
+      <h1 class="text-3xl font-bold text-center mb-6">Registration Form</h1>
+      <form id="registration-form" class="space-y-6">
+        
+        <!-- Personal Details -->
+        <div>
+          <label for="name" class="block text-sm font-medium text-gray-700">Full Name</label>
+          <input type="text" id="name" name="name" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+        </div>
+
+        <div>
+          <label for="sapId" class="block text-sm font-medium text-gray-700">SAP ID</label>
+          <input type="text" id="sapId" name="sapId" required pattern="^(7057|7002)\d{7}$" title="Must be an 11-digit number starting with 7057 or 7002" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+        </div>
+
+        <div>
+          <label for="email" class="block text-sm font-medium text-gray-700">NMIMS Email ID</label>
+          <input type="email" id="email" name="email" required pattern=".+@(nmims\.edu\.in|nmims\.in)$" title="Must be a valid NMIMS email ending in @nmims.edu.in or @nmims.in" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+        </div>
+
+        <!-- Academic Details -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div>
+            <label for="year" class="block text-sm font-medium text-gray-700">Year</label>
+            <select id="year" name="year" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+              <option value="">Select Year</option>
+              <option value="1">1st Year</option>
+              <option value="2">2nd Year</option>
+              <option value="3">3rd Year</option>
+              <option value="4">4th Year</option>
+            </select>
+          </div>
+          <div>
+            <label for="course" class="block text-sm font-medium text-gray-700">Course</label>
+            <select id="course" name="course" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+              <option value="">Select Course</option>
+              <option value="Computer Science and Engineering (Data Science)">Computer Science and Engineering (Data Science)</option>
+              <option id="course-ce" value="Computer Engineering">Computer Engineering</option>
+            </select>
+          </div>
+          <div>
+            <label for="section" class="block text-sm font-medium text-gray-700">Section</label>
+            <select id="section" name="section" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+              <option value="">Select Section</option>
+              <option value="A">A</option>
+              <option value="B">B</option>
+              <option value="C">C</option>
+              <option value="D">D</option>
+              <option id="section-none" value="No Section" class="hidden">No Section</option>
+            </select>
+          </div>
+        </div>
+        
+        <!-- Payment Details -->
+        <div class="border-t pt-6">
+          <h2 class="text-xl font-semibold text-center mb-4">Payment Information</h2>
+          <div class="flex flex-col items-center gap-4">
+             <p>Scan the QR code below to complete the payment.</p>
+             <img src="/media/upi-qr-code.png" alt="UPI QR Code" class="w-48 h-48 border rounded-lg" onerror="this.onerror=null;this.src='https://placehold.co/192x192/FFFFFF/000000?text=UPI+QR+Code';">
+          </div>
+           <div>
+            <label for="transactionId" class="block text-sm font-medium text-gray-700 mt-4">Transaction ID</label>
+            <input type="text" id="transactionId" name="transactionId" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+          </div>
+           <div>
+            <label for="paymentScreenshot" class="block text-sm font-medium text-gray-700 mt-4">Payment Screenshot</label>
+            <input type="file" id="paymentScreenshot" name="paymentScreenshot" accept="image/*" required class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#d2232a] file:text-white hover:file:bg-[#b01e24]">
+          </div>
+        </div>
+
+        <div class="pt-4">
+          <button type="submit" class="w-full bg-[#d2232a] text-white font-bold py-3 px-4 rounded-lg hover:bg-[#b01e24] transition duration-300 ease-in-out shadow-lg">Submit Registration</button>
+        </div>
+      </form>
+       <div id="message" class="mt-4 text-center"></div>
+    </div>
+  </main>
+  
+  <div id="footer-placeholder"></div>
+  
+  <script src="/js/main.js"></script>
+</body>
+</html>

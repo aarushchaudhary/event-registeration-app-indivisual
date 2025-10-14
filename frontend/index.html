@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aptitude Test - Home</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="flex flex-col min-h-screen font-sans bg-gray-100 text-gray-800">
+  
+  <!-- Header will be injected here by JS -->
+  <div id="header-placeholder"></div>
+
+  <!-- Main Content -->
+  <main class="flex-grow container mx-auto px-4 py-12 flex items-center justify-center">
+    <div class="text-center">
+      <h1 class="text-4xl md:text-6xl font-bold text-gray-900 mb-6">CodeIT Aptitude Test</h1>
+      <p class="text-lg md:text-xl text-gray-600 mb-10">30 days 300 questions</p>
+      
+      <!-- Stats Boxes -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-2xl mx-auto mb-12">
+        <div class="bg-white bg-opacity-70 backdrop-blur-sm p-8 rounded-xl shadow-lg border border-gray-200">
+          <h2 class="text-2xl font-bold text-gray-800 mb-2">Registrations</h2>
+          <!-- Changed text color to green-600 -->
+          <p id="registrations-count" class="text-5xl font-extrabold text-green-600">--</p>
+        </div>
+        <div class="bg-white bg-opacity-70 backdrop-blur-sm p-8 rounded-xl shadow-lg border border-gray-200">
+          <h2 class="text-2xl font-bold text-gray-800 mb-2">Seats Left</h2>
+          <!-- Changed text color to the custom red -->
+          <p id="seats-left" class="text-5xl font-extrabold text-[#d2232a]">--</p>
+        </div>
+      </div>
+
+      <!-- Register Button -->
+      <!-- Changed background color to the custom red and updated hover state -->
+      <a href="/register.html" class="bg-[#d2232a] text-white font-bold py-4 px-10 rounded-lg text-xl hover:bg-red-700 transition duration-300 ease-in-out shadow-xl transform hover:scale-105">
+        Register Now
+      </a>
+    </div>
+  </main>
+
+  <!-- Footer will be injected here by JS -->
+  <div id="footer-placeholder"></div>
+
+  <script src="/js/main.js"></script>
+  <script>
+    // Fetch and display registration stats
+    document.addEventListener('DOMContentLoaded', () => {
+        fetch('/api/stats')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('registrations-count').textContent = data.registeredCount;
+                document.getElementById('seats-left').textContent = data.seatsLeft;
+            })
+            .catch(err => {
+                console.error('Failed to fetch stats:', err);
+                document.getElementById('registrations-count').textContent = 'N/A';
+                document.getElementById('seats-left').textContent = 'N/A';
+            });
+    });
+  </script>
+</body>
+</html>
+

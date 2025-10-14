@@ -1,0 +1,6 @@
+# uploads directory
+/backend/uploads/
+# environment variables
+/backend/.env
+# node modules
+/node_modules/
