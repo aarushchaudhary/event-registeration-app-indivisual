@@ -1,13 +1,18 @@
-# This file provides basic configuration for deploying to Netlify.
-# It tells Netlify how to build the site and where the public directory is.
-[build]
-  # This command is not strictly necessary for a Node.js backend on Netlify Functions,
-  # but good to have. We are primarily serving static files and using a backend server.
-  command = "npm install"
-  # Directory with static files to deploy.
-  publish = "frontend/"
+# This file configures the build and deployment settings for Netlify
 
-# Redirect all non-API requests to be handled by our Express server.
-# This setup is more suited for platforms like Heroku or a VPS.
-# For Netlify, you'd typically move the backend to Netlify Functions.
-# The server.js configuration is set up to handle this for a single-server setup.
+[build]
+  # The command to build your site (if you had a build step)
+  # For a static site, we don't need a build command.
+  
+  # The directory that contains your built frontend.
+  publish = "frontend/"
+  
+  # The directory where your serverless functions live.
+  functions = "netlify/functions/"
+
+# This rule redirects all API calls to your serverless function.
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api/:splat"
+  status = 200
+
