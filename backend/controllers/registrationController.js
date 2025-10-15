@@ -1,6 +1,7 @@
 const Registration = require('../models/registration');
 const Leaderboard = require('../models/leaderboard');
 const bcrypt = require('bcryptjs');
+const imagekit = require('../services/imagekitService'); // Updated path
 
 exports.createRegistration = async (req, res) => {
     const { name, sapId, email, year, course, section, transactionId } = req.body;
@@ -17,9 +18,15 @@ exports.createRegistration = async (req, res) => {
 
         const existingEmail = await Registration.findOne({ email });
         if (existingEmail) return res.status(400).json({ success: false, message: 'Email already registered.' });
-        
+
         const existingTransaction = await Registration.findOne({ transactionId });
         if (existingTransaction) return res.status(400).json({ success: false, message: 'Transaction ID already used.' });
+
+        // Upload payment screenshot to ImageKit
+        const uploadResponse = await imagekit.upload({
+            file: req.file.buffer,
+            fileName: req.file.originalname,
+        });
 
         // Hash sensitive data
         const salt = await bcrypt.genSalt(10);
@@ -29,16 +36,16 @@ exports.createRegistration = async (req, res) => {
 
         const newRegistration = new Registration({
             name,
-            sapId, // Store plain for searching by admin, hash if needed for extreme security
-            email, // Store plain for searching by admin
+            sapId,
+            email,
             year,
             course,
             section,
-            transactionId, // Store plain for searching
+            transactionId,
             hashedSapId,
             hashedEmail,
             hashedTransactionId,
-            paymentScreenshotPath: req.file.path,
+            paymentScreenshotPath: uploadResponse.url, // Save ImageKit URL
         });
 
         const savedRegistration = await newRegistration.save();
@@ -49,7 +56,7 @@ exports.createRegistration = async (req, res) => {
             points: 0
         });
         await newLeaderboardEntry.save();
-        
+
         res.status(201).json({ success: true, message: 'Registration successful!' });
 
     } catch (error) {

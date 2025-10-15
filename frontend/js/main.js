@@ -124,9 +124,15 @@ document.addEventListener('DOMContentLoaded', function() {
     
     yearSelect.addEventListener('change', updateCourses);
     courseSelect.addEventListener('change', updateSections);
-    paymentScreenshotInput.addEventListener('change', () => {
-      fileNameSpan.textContent = paymentScreenshotInput.files[0] ? paymentScreenshotInput.files[0].name : 'No file chosen';
-    });
+    
+    // Check if paymentScreenshotInput exists before adding event listener
+    if(paymentScreenshotInput) {
+        paymentScreenshotInput.addEventListener('change', () => {
+          if(fileNameSpan) {
+            fileNameSpan.textContent = paymentScreenshotInput.files[0] ? paymentScreenshotInput.files[0].name : 'No file chosen';
+          }
+        });
+    }
 
     registrationForm.addEventListener('submit', function(e) {
       e.preventDefault();
@@ -140,22 +146,45 @@ document.addEventListener('DOMContentLoaded', function() {
         method: 'POST',
         body: formData,
       })
-      .then(response => response.json())
+      .then(response => {
+        // First, check if the response is successful (status 200-299)
+        // If not, we'll handle it as an error
+        if (!response.ok) {
+            // Get the error message from the response body (as text)
+            return response.text().then(text => {
+                // Try to parse it as JSON, but fall back to plain text
+                try {
+                    const errorData = JSON.parse(text);
+                    throw new Error(errorData.message || 'An unknown error occurred.');
+                } catch {
+                    throw new Error(text || `Server responded with status: ${response.status}`);
+                }
+            });
+        }
+        // If the response is OK, then we can safely parse it as JSON
+        return response.json();
+      })
       .then(data => {
+        // This part will only run if the response was successful
         if (data.success) {
           messageDiv.textContent = 'Registration successful!';
           messageDiv.className = 'text-center font-medium text-green-600 mt-4';
           registrationForm.reset();
-          fileNameSpan.textContent = 'No file chosen';
+          if(fileNameSpan) {
+            fileNameSpan.textContent = 'No file chosen';
+          }
         } else {
+          // This handles cases where the server returns a 200 OK status
+          // but indicates failure in the JSON body (e.g., { success: false, ... })
           messageDiv.textContent = `Error: ${data.message}`;
           messageDiv.className = 'text-center font-medium text-red-600 mt-4';
         }
       })
       .catch(error => {
-        messageDiv.textContent = 'An unexpected error occurred.';
+        // This will catch network errors and the errors we threw manually above
+        messageDiv.textContent = `Error: ${error.message}`;
         messageDiv.className = 'text-center font-medium text-red-600 mt-4';
-        console.error('Error:', error);
+        console.error('Submission Error:', error);
       });
     });
 
@@ -209,9 +238,16 @@ document.addEventListener('DOMContentLoaded', function() {
             location.reload();
         });
     }
-
-    document.getElementById('export-registrations').addEventListener('click', () => exportData('registrations'));
-    document.getElementById('export-leaderboard').addEventListener('click', () => exportData('leaderboard'));
+    
+    const exportRegButton = document.getElementById('export-registrations');
+    if(exportRegButton) {
+        exportRegButton.addEventListener('click', () => exportData('registrations'));
+    }
+    
+    const exportLeadButton = document.getElementById('export-leaderboard');
+    if(exportLeadButton) {
+        exportLeadButton.addEventListener('click', () => exportData('leaderboard'));
+    }
   }
 });
 
@@ -234,7 +270,10 @@ function loadAdminData(token) {
                   <td class="px-6 py-4 whitespace-nowrap">${reg.year}</td>
                   <td class="px-6 py-4 whitespace-nowrap">${reg.course}</td>
                   <td class="px-6 py-4 whitespace-nowrap">${reg.section}</td>
-                  <td class="px-6 py-4 whitespace-nowrap"><a href="/${reg.paymentScreenshotPath}" target="_blank" class="text-blue-600 hover:underline">View</a></td>
+                  <td class="px-6 py-4 whitespace-nowrap"><a href="${reg.paymentScreenshotPath}" target="_blank" class="text-blue-600 hover:underline">View</a></td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <button onclick="deleteUser('${reg._id}')" class="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700">Delete</button>
+                  </td>
               </tr>`;
           tableBody.innerHTML += row;
       });
@@ -298,6 +337,33 @@ function updatePoints(registrationId) {
   });
 }
 
+function deleteUser(registrationId) {
+    if (!confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+        return;
+    }
+
+    const token = localStorage.getItem('admin-token');
+    fetch(`/api/admin/registrations/${registrationId}`, {
+        method: 'DELETE',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            alert('User deleted successfully!');
+            loadAdminData(token); // Refresh the tables
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(err => {
+        alert('An error occurred while deleting the user.');
+        console.error(err);
+    });
+}
+
 function exportData(type) {
   const token = localStorage.getItem('admin-token');
   const url = `/api/admin/export/${type}`;
@@ -323,4 +389,3 @@ function exportData(type) {
           alert(`Failed to export ${type}.`);
       });
 }
-

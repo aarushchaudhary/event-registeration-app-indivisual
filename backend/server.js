@@ -1,4 +1,5 @@
 const path = require('path');
+// Ensure dotenv is configured to find the .env file in the 'backend' directory
 require('dotenv').config({ path: path.resolve(__dirname, '.env') });
 
 const express = require('express');
@@ -17,13 +18,12 @@ app.use(express.urlencoded({ extended: true }));
 
 // Serve static files from the frontend directory
 app.use(express.static(path.join(__dirname, '..', 'frontend')));
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // API Routes
 app.use('/api', registrationRoutes);
 app.use('/api/admin', adminRoutes);
 
-// General API Endpoints
+// General API Endpoints (mirrors the serverless function)
 app.get('/api/stats', async (req, res) => {
     try {
         const registeredCount = await Registration.countDocuments();
@@ -35,14 +35,12 @@ app.get('/api/stats', async (req, res) => {
     }
 });
 
-// THIS IS THE CORRECTED LEADERBOARD ROUTE
 app.get('/api/leaderboard', async (req, res) => {
     try {
         const leaderboard = await Leaderboard.find({})
-            .populate('registrationId', 'name') // This links to the Registration to get the name
+            .populate('registrationId', 'name')
             .sort({ points: -1 });
             
-        // Map the data to a clean format for the frontend
         const formattedLeaderboard = leaderboard.map(item => ({
             name: item.registrationId ? item.registrationId.name : 'User Not Found',
             points: item.points,
@@ -55,7 +53,7 @@ app.get('/api/leaderboard', async (req, res) => {
     }
 });
 
-// Serve HTML files
+// Serve HTML files for different pages
 app.get('/:page?', (req, res) => {
     const page = req.params.page;
     const allowedPages = ['index', 'register', 'leaderboard', 'admin'];
@@ -70,7 +68,7 @@ app.get('/:page?', (req, res) => {
     }
 });
 
-// Database Connection
+// Database Connection and Server Start
 mongoose.connect(process.env.MONGODB_URI)
 .then(() => {
     console.log('Connected to MongoDB');

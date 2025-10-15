@@ -9,4 +9,7 @@ router.post('/leaderboard', authMiddleware, adminController.updateLeaderboard);
 router.get('/export/registrations', authMiddleware, adminController.exportRegistrations);
 router.get('/export/leaderboard', authMiddleware, adminController.exportLeaderboard);
 
+// New route for deleting a registration
+router.delete('/registrations/:id', authMiddleware, adminController.deleteRegistration);
+
 module.exports = router;

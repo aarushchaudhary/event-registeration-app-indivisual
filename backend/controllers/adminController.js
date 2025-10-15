@@ -53,6 +53,30 @@ exports.updateLeaderboard = async (req, res) => {
     }
 };
 
+// New function to delete a registration
+exports.deleteRegistration = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const registration = await Registration.findById(id);
+
+        if (!registration) {
+            return res.status(404).json({ success: false, message: 'User not found.' });
+        }
+
+        // Delete the user from the registrations collection
+        await Registration.findByIdAndDelete(id);
+
+        // Also delete the user from the leaderboard
+        await Leaderboard.deleteOne({ registrationId: id });
+
+        res.json({ success: true, message: 'User deleted successfully.' });
+
+    } catch (error) {
+        console.error("Deletion Error:", error);
+        res.status(500).json({ success: false, message: 'Server error while deleting user.' });
+    }
+};
+
 // Export registrations to Excel
 exports.exportRegistrations = async (req, res) => {
     try {
@@ -124,4 +148,3 @@ exports.exportLeaderboard = async (req, res) => {
         res.status(500).json({ success: false, message: 'Failed to export leaderboard data' });
     }
 };
-
