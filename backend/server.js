@@ -56,7 +56,7 @@ app.get('/api/leaderboard', async (req, res) => {
 // Serve HTML files for different pages
 app.get('/:page?', (req, res) => {
     const page = req.params.page;
-    const allowedPages = ['index', 'register', 'leaderboard', 'admin'];
+    const allowedPages = ['index', 'register', 'leaderboard', 'admin', 'rules'];
     
     if (page && allowedPages.includes(page)) {
         res.sendFile(path.join(__dirname, '..', 'frontend', `${page}.html`));
