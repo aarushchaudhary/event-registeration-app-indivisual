@@ -63,4 +63,12 @@ app.use('/api/', apiRouter);
 
 
 // Export the handler for Netlify
-module.exports.handler = serverless(app);
+// Define which MIME types are binary
+const binaryMimeTypes = [
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+];
+
+// Pass the binary types config to the serverless handler
+module.exports.handler = serverless(app, {
+    binary: binaryMimeTypes
+});
