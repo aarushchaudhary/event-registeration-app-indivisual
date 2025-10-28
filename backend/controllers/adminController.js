@@ -102,7 +102,7 @@ exports.exportRegistrations = async (req, res) => {
         res.setHeader('Content-Disposition','attachment; filename=registrations.xlsx');
 
         await workbook.xlsx.write(res);
-        res.end();
+        //res.end();
 
     } catch (error) {
         console.error("Export Error:", error);
@@ -141,7 +141,7 @@ exports.exportLeaderboard = async (req, res) => {
         res.setHeader('Content-Disposition','attachment; filename=leaderboard.xlsx');
 
         await workbook.xlsx.write(res);
-        res.end();
+        //res.end();
 
     } catch (error) {
         console.error("Export Error:", error);
